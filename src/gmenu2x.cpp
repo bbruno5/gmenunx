@@ -174,8 +174,13 @@ enum mmc_status {
 
 int16_t curMMCStatus, preMMCStatus;
 int16_t getMMCStatus(void) {
+#ifdef TARGET_GOPH
+	if (memdev > 0) return !(memregs[0x10400 >> 2] >> 11 & 0b1);
+	return MMC_ERROR;
+#else
 	if (memdev > 0) return !(memregs[0x10500 >> 2] >> 0 & 0b1);
 	return MMC_ERROR;
+#endif
 }
 
 enum udc_status {
@@ -184,14 +189,23 @@ enum udc_status {
 
 int udcConnectedOnBoot;
 int16_t getUDCStatus(void) {
+#ifdef TARGET_GOPH
+	if (memdev > 0) return (memregs[0x10000 >> 2] >> 6 & 0b1);
+	return UDC_ERROR;
+#else
 	if (memdev > 0) return (memregs[0x10300 >> 2] >> 7 & 0b1);
 	return UDC_ERROR;
+#endif
 }
 
 int16_t tvOutPrev = false, tvOutConnected;
 bool getTVOutStatus() {
+#ifdef TARGET_PAP
+	return true;
+#else
 	if (memdev > 0) return !(memregs[0x10300 >> 2] >> 25 & 0b1);
 	return false;
+#endif
 }
 
 enum vol_mode_t {
@@ -285,7 +299,7 @@ GMenu2X::GMenu2X() {
 	SDL_ShowCursor(0);
 #elif defined(TARGET_RS97)
 	SDL_ShowCursor(0);
-	s->ScreenSurface = SDL_SetVideoMode(320, 480, confInt["videoBpp"], SDL_HWSURFACE/*|SDL_DOUBLEBUF*/);
+	s->ScreenSurface = SDL_SetVideoMode(480, 272, confInt["videoBpp"], SDL_HWSURFACE);
 	s->raw = SDL_CreateRGBSurface(SDL_SWSURFACE, resX, resY, confInt["videoBpp"], 0, 0, 0, 0);
 #else
 	s->raw = SDL_SetVideoMode(resX, resY, confInt["videoBpp"], SDL_HWSURFACE|SDL_DOUBLEBUF);
