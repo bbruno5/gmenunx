@@ -15,10 +15,10 @@ SDL_CFLAGS := $(shell $(SDL_CONFIG) --cflags)
 SDL_LIBS   := $(shell $(SDL_CONFIG) --libs)
 
 CFLAGS = -O2 -DTARGET_RS97 -DTARGET_GOPH -DTARGET=$(TARGET) -D__BUILDTIME__="$(BUILDTIME)" -DLOG_LEVEL=0 $(SDL_CFLAGS) -I$(CHAINPREFIX)/usr/include/ -I$(SYSROOT)/usr/include/  -I$(SYSROOT)/usr/include/SDL/
-CFLAGS += -std=gnu++11 -fdata-sections -ffunction-sections -fno-exceptions
+CFLAGS += -std=gnu++11 -fdata-sections -ffunction-sections -fno-exceptions -fno-math-errno -fno-threadsafe-statics
 
 CXXFLAGS = $(CFLAGS)
-LDFLAGS = $(SDL_LIBS) -lSDL -lSDL_image -lSDL_ttf -lfreetype -lpng -ljpeg -lz
+LDFLAGS = $(SDL_LIBS) -lSDL -lSDL_image -lSDL_ttf -lfreetype -lpng -ljpeg -lz -lpthread
 LDFLAGS +=-Wl,--as-needed -Wl,--gc-sections -s
 
 OBJDIR = objs/$(TARGET)
